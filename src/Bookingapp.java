@@ -1,51 +1,52 @@
 import java.util.*;
 
-// Service class
-class Service {
-    private String serviceName;
-    private double cost;
+// Reservation class
+class Reservation {
+    private String guestName;
+    private String roomType;
 
-    public Service(String serviceName, double cost) {
-        this.serviceName = serviceName;
-        this.cost = cost;
+    public Reservation(String guestName, String roomType) {
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getGuestName() {
+        return guestName;
     }
 
-    public double getCost() {
-        return cost;
+    public String getRoomType() {
+        return roomType;
     }
 }
 
-// Manager class
-class AddOnServiceManager {
+// Booking History
+class BookingHistory {
+    private List<Reservation> confirmedReservations;
 
-    private Map<String, List<Service>> servicesByReservation;
-
-    public AddOnServiceManager() {
-        servicesByReservation = new HashMap<>();
+    public BookingHistory() {
+        confirmedReservations = new ArrayList<>();
     }
 
-    public void addService(String reservationId, Service service) {
-        servicesByReservation
-                .computeIfAbsent(reservationId, k -> new ArrayList<>())
-                .add(service);
+    public void addReservation(Reservation reservation) {
+        confirmedReservations.add(reservation);
     }
 
-    public double calculateTotalServiceCost(String reservationId) {
-        double total = 0;
+    public List<Reservation> getConfirmedReservations() {
+        return confirmedReservations;
+    }
+}
 
-        List<Service> services = servicesByReservation.get(reservationId);
+// Report Service
+class BookingReportService {
 
-        if (services != null) {
-            for (Service s : services) {
-                total += s.getCost();
-            }
+    public void generateReport(BookingHistory history) {
+
+        System.out.println("Booking History Report");
+
+        for (Reservation r : history.getConfirmedReservations()) {
+            System.out.println("Guest: " + r.getGuestName()
+                    + ", Room Type: " + r.getRoomType());
         }
-
-        return total;
     }
 }
 
@@ -54,18 +55,16 @@ public class Bookingapp {
 
     public static void main(String[] args) {
 
-        AddOnServiceManager manager = new AddOnServiceManager();
+        BookingHistory history = new BookingHistory();
+        BookingReportService reportService = new BookingReportService();
 
-        String reservationId = "Single-1";
+        // Add confirmed bookings (as shown in PDF output)
+        history.addReservation(new Reservation("Abhi", "Single"));
+        history.addReservation(new Reservation("Subha", "Double"));
+        history.addReservation(new Reservation("Vanmathi", "Suite"));
 
-        // Add services
-        manager.addService(reservationId, new Service("Breakfast", 500));
-        manager.addService(reservationId, new Service("Spa", 1000));
+        System.out.println("Booking History and Reporting\n");
 
-        double totalCost = manager.calculateTotalServiceCost(reservationId);
-
-        System.out.println("Add-On Service Selection");
-        System.out.println("Reservation ID: " + reservationId);
-        System.out.println("Total Add-On Cost: " + totalCost);
+        reportService.generateReport(history);
     }
 }
